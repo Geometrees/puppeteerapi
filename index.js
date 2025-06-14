@@ -19,7 +19,7 @@ app.get('/get-stream-url', async (req, res) => {
     }
   });
 
-  await page.goto('https://your-legal-site.com/video-page', { waitUntil: 'networkidle2' });
+  await page.goto('https://ww5.123moviesfree.net/season/american-housewife-season-1-17065/', { waitUntil: 'networkidle2' });
 
   await page.waitForSelector('.video-option');
   const buttons = await page.$$('.video-option');
