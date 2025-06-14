@@ -2,7 +2,7 @@ const express = require('express');
 const puppeteer = require('puppeteer-core');
 const app = express();
 
-const CHROME_PATH = '/usr/bin/google-chrome'; // Adjust if needed
+const CHROME_PATH = '/usr/bin/google-chrome';
 
 app.get('/get-stream-url', async (req, res) => {
   let browser = null;
