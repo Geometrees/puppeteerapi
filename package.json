@@ -5,12 +5,8 @@
   "scripts": {
     "start": "node index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "express": "^5.1.0",
-    "puppeteer-core": "^24.10.1"
+    "puppeteer": "^24.10.1"
   }
 }

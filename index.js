@@ -1,15 +1,12 @@
+const puppeteer = require('puppeteer');
 const express = require('express');
-const puppeteer = require('puppeteer-core');
 const app = express();
 
-const CHROME_PATH = '/usr/bin/google-chrome';
-
 app.get('/get-stream-url', async (req, res) => {
-  let browser = null;
   try {
-    browser = await puppeteer.launch({
-      executablePath: CHROME_PATH,
+    const browser = await puppeteer.launch({
       headless: true,
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
@@ -24,31 +21,31 @@ app.get('/get-stream-url', async (req, res) => {
     });
 
     await page.goto('https://ww5.123moviesfree.net/season/american-housewife-season-1-17065/', { waitUntil: 'networkidle2' });
+
     await page.waitForSelector('.video-option');
     const buttons = await page.$$('.video-option');
+    const index = req.query.index || 0;
 
-    const index = parseInt(req.query.index || 0);
     if (buttons[index]) {
       await buttons[index].click();
     } else {
+      await browser.close();
       return res.json({ error: 'No button found at that index' });
     }
 
     await page.waitForTimeout(8000);
+    await browser.close();
 
     if (videoURL) {
-      return res.json({ videoURL });
+      res.json({ videoURL });
     } else {
-      return res.json({ error: 'No video URL found' });
+      res.json({ error: 'No video URL found' });
     }
   } catch (err) {
-    return res.json({ error: 'An error occurred', details: err.message });
-  } finally {
-    if (browser) {
-      await browser.close();
-    }
+    console.error(err);
+    res.json({ error: 'An error occurred', details: err.message });
   }
 });
 
 const port = process.env.PORT || 10000;
-app.listen(port, () => console.log(`Server running on port ${port}`));
+app.listen(port, () => console.log(`Puppeteer service running on port ${port}`));
