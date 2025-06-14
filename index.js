@@ -1,12 +1,12 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const express = require('express');
 const app = express();
 
 app.get('/get-stream-url', async (req, res) => {
   try {
     const browser = await puppeteer.launch({
+      executablePath: '/usr/bin/chromium-browser', // or '/usr/bin/chromium' or wherever Chromium is on Render
       headless: true,
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
@@ -24,10 +24,10 @@ app.get('/get-stream-url', async (req, res) => {
 
     await page.waitForSelector('.video-option');
     const buttons = await page.$$('.video-option');
-    const index = req.query.index || 0;
 
-    if (buttons[index]) {
-      await buttons[index].click();
+    const VIDEO_INDEX = req.query.index || 0;
+    if (buttons[VIDEO_INDEX]) {
+      await buttons[VIDEO_INDEX].click();
     } else {
       await browser.close();
       return res.json({ error: 'No button found at that index' });
@@ -37,15 +37,16 @@ app.get('/get-stream-url', async (req, res) => {
     await browser.close();
 
     if (videoURL) {
-      res.json({ videoURL });
+      return res.json({ videoURL });
     } else {
-      res.json({ error: 'No video URL found' });
+      return res.json({ error: 'No video URL found' });
     }
+
   } catch (err) {
     console.error(err);
     res.json({ error: 'An error occurred', details: err.message });
   }
 });
 
-const port = process.env.PORT || 10000;
-app.listen(port, () => console.log(`Puppeteer service running on port ${port}`));
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Server running on port ${port}`));
