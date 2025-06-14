@@ -41,4 +41,5 @@ app.get('/get-stream-url', async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log('Puppeteer service running on port 3000'));
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Puppeteer service running on port ${port}`));
