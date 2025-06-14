@@ -1,28 +1,38 @@
 FROM node:22-alpine
 
-# Install Chromium and necessary dependencies
+# Install Chromium via Alpine package manager
 RUN apk add --no-cache \
     chromium \
     nss \
     freetype \
+    freetype-dev \
     harfbuzz \
     ca-certificates \
-    ttf-freefont
+    ttf-freefont \
+    font-noto-emoji \
+    dbus \
+    xvfb
+
+# Verify Chromium installation
+RUN chromium-browser --version
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy package files
 COPY package*.json ./
+
+# Install Node dependencies WITHOUT downloading Chromium
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 RUN npm install
 
-# Copy all other files
+# Copy app files
 COPY . .
 
-# Set Puppeteer to use Chromium installed by apk
+# Tell Puppeteer where to find Chromium
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Expose app port
+# Expose port
 EXPOSE 10000
 
 # Start app
