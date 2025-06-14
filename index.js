@@ -1,12 +1,14 @@
 const express = require('express');
-const puppeteer = require('puppeteer');
-
+const puppeteer = require('puppeteer-core');
 const app = express();
+
+const CHROME_PATH = '/usr/bin/google-chrome'; // Adjust if needed
 
 app.get('/get-stream-url', async (req, res) => {
   let browser = null;
   try {
     browser = await puppeteer.launch({
+      executablePath: CHROME_PATH,
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
