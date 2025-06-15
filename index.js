@@ -1,13 +1,13 @@
-const puppeteer = require('puppeteer');
 const express = require('express');
+const puppeteer = require('puppeteer');
+
 const app = express();
 
 app.get('/get-stream-url', async (req, res) => {
-  let browser = null;
-  
+  let browser;
   try {
     browser = await puppeteer.launch({
-      headless: true,
+      headless: 'new',
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox'
@@ -15,35 +15,28 @@ app.get('/get-stream-url', async (req, res) => {
     });
 
     const page = await browser.newPage();
-    let videoURL = null;
+    await page.goto('https://ww5.123moviesfree.net/season/american-housewife-season-1-17065/', { waitUntil: 'networkidle2' });
 
+    // Listen to network requests for stream URLs
+    let streamUrl = null;
     page.on('request', request => {
       const url = request.url();
-      if (url.endsWith('.m3u8') || url.endsWith('.mp4') || url.endsWith('.mpd')) {
-        videoURL = url;
+      if (url.match(/\.(m3u8|mp4|mpd)/)) {
+        streamUrl = url;
       }
     });
 
-    await page.goto('https://ww5.123moviesfree.net/season/american-housewife-season-1-17065/', { waitUntil: 'networkidle2' });
-    await page.waitForSelector('.video-option');
-    const buttons = await page.$$('.video-option');
+    // Give it time to catch requests
+    await page.waitForTimeout(5000);
 
-    const VIDEO_INDEX = parseInt(req.query.index) || 0;
-    if (buttons[VIDEO_INDEX]) {
-      await buttons[VIDEO_INDEX].click();
-      await page.waitForTimeout(8000);
-      
-      if (videoURL) {
-        return res.json({ videoURL });
-      } else {
-        return res.json({ error: 'No video URL found' });
-      }
+    if (streamUrl) {
+      res.json({ streamUrl });
     } else {
-      return res.json({ error: 'No button found at that index' });
+      res.status(404).json({ error: 'Stream URL not found' });
     }
-
   } catch (err) {
-    res.json({ error: 'An error occurred', details: err.message });
+    console.error(err);
+    res.status(500).json({ error: err.toString() });
   } finally {
     if (browser) {
       await browser.close();
@@ -51,9 +44,7 @@ app.get('/get-stream-url', async (req, res) => {
   }
 });
 
-app.get('/health', (req, res) => {
-  res.json({ status: 'OK' });
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
-
-const port = process.env.PORT || 10000;
-app.listen(port, () => console.log(`Server running on port ${port}`));

@@ -1,12 +1,13 @@
 {
-  "name": "puppeteer-api",
+  "name": "puppeteer-express-app",
   "version": "1.0.0",
+  "description": "Express + Puppeteer API",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "^5.1.0",
-    "puppeteer": "^22.12.0"
+    "express": "^4.18.2",
+    "puppeteer": "^22.5.0"
   }
 }

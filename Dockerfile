@@ -1,28 +1,18 @@
-FROM ghcr.io/puppeteer/puppeteer:22.12.0
-
-# Switch to root to install additional packages
-USER root
-
-# Install additional dependencies
-RUN apt-get update && apt-get install -y \
-    && rm -rf /var/lib/apt/lists/*
+# Use official Node.js image with Chrome pre-installed
+FROM ghcr.io/puppeteer/puppeteer:latest
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies (skip chromium download since it's already included)
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+# Copy package files and install dependencies
+COPY package.json ./
 RUN npm install
 
-# Copy app files
+# Copy rest of the code
 COPY . .
 
-# Switch back to pptruser
-USER pptruser
+# Expose port (same as app)
+EXPOSE 3000
 
-EXPOSE 10000
-
-CMD ["node", "index.js"]
+# Run the app
+CMD ["npm", "start"]
