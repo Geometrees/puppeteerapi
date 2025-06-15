@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "postinstall": "puppeteer browsers install chrome"
+    "start": "node index.js"
   },
   "dependencies": {
     "express": "^5.1.0",
-    "puppeteer": "^24.10.1"
+    "puppeteer": "^22.12.0"
   }
 }
