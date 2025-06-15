@@ -1,3 +1,12 @@
+const express = require('express');
+const puppeteer = require('puppeteer');
+
+const app = express();
+
+// Health check route for Render
+app.get('/', (req, res) => res.send('OK'));
+
+// Main API route
 app.get('/get-stream-url', async (req, res) => {
   let browser;
   try {
@@ -12,7 +21,7 @@ app.get('/get-stream-url', async (req, res) => {
       waitUntil: 'networkidle2'
     });
 
-    // Try waiting for network response
+    // Wait for a stream-like response
     const found = await page.waitForResponse(
       response => response.url().match(/\.(m3u8|mp4|mpd)/),
       { timeout: 15000 }
@@ -41,9 +50,15 @@ app.get('/get-stream-url', async (req, res) => {
     }
 
   } catch (err) {
-    console.error('Error:', err);
+    console.error('Error in /get-stream-url:', err);
     res.status(500).json({ error: err.toString() });
   } finally {
     if (browser) await browser.close();
   }
+});
+
+// Start server on Render-assigned port
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
