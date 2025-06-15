@@ -3,6 +3,8 @@ const puppeteer = require('puppeteer');
 
 const app = express();
 
+app.get('/', (req, res) => res.send('OK'));
+
 app.get('/get-stream-url', async (req, res) => {
   let browser;
   try {
