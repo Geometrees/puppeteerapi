@@ -8,16 +8,12 @@ app.get('/get-stream-url', async (req, res) => {
   try {
     browser = await puppeteer.launch({
       headless: 'new',
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox'
-      ]
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
     const page = await browser.newPage();
     await page.goto('https://ww5.123moviesfree.net/season/american-housewife-season-1-17065/', { waitUntil: 'networkidle2' });
 
-    // Listen to network requests for stream URLs
     let streamUrl = null;
     page.on('request', request => {
       const url = request.url();
@@ -26,8 +22,8 @@ app.get('/get-stream-url', async (req, res) => {
       }
     });
 
-    // Give it time to catch requests
-    await page.waitForTimeout(5000);
+    // Use modern wait
+    await new Promise(resolve => setTimeout(resolve, 5000));
 
     if (streamUrl) {
       res.json({ streamUrl });
